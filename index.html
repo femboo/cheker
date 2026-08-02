@@ -3,43 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Скачать Чекер</title>
+    <title>Huuif — Мониторинг и анализ протоколов приложений</title>
+    <!-- Подключение строгого геометрического шрифта -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    
     <style>
+        :root {
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --border: #222222;
+            --border-hover: #444444;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --radius-main: 12px;
+            --radius-sub: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Геометрическая сетка на фоне */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        /* Шапка с названием строго по центру */
+        header {
+            padding: 32px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Главный экран */
+        .hero {
+            padding: 120px 0 80px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s forwards 0.2s;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sub);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 52px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 600px;
+            font-weight: 300;
+            margin: 0 auto;
+        }
+
+        /* Сетка преимуществ */
+        .features {
+            padding: 40px 0 100px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s forwards 0.4s;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-main);
+            padding: 40px;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            background-color: #111111;
+            border-color: var(--border-hover);
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 24px;
+            color: var(--text);
+            display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .btn-download {
-            display: inline-block;
-            padding: 15px 30px;
+
+        .feature-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 18px;
-            color: #fff;
-            background-color: #007bff;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.2s;
+            font-weight: 500;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .btn-download:hover {
-            background-color: #0056b3;
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* Секция скачивания */
+        .cta-section {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s forwards 0.6s;
+        }
+
+        .cta-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .cta-section p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            font-weight: 300;
+        }
+
+        /* Монохромная кнопка со скруглением — БЕЗ ИКОНКИ */
+        .download-btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background-color: var(--text);
+            border: 1px solid var(--text);
+            border-radius: var(--radius-sub);
+            color: var(--bg);
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .download-btn:hover {
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        /* Подвал */
+        footer {
+            padding: 60px 0 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 { font-size: 36px; }
+            .cta-section h2 { font-size: 28px; }
+            .hero { padding: 80px 0 40px 0; }
+            .feature-card { padding: 32px; }
+            .features-grid { gap: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <h1>Скачать чекер</h1>
-    
-    <!-- Атрибут download заставляет браузер скачивать файл, а не открывать его -->
-    <a href="Huuif.exe" download class="btn-download">Скачать</a>
+    <!-- Шапка -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">Huuif</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Главный экран -->
+        <section class="hero">
+            <div class="container">
+                <div class="badge">v1.0.0 Release</div>
+                <h1>Профессиональный чекер<br>сетевых протоколов.</h1>
+                <p class="subtitle">Низкоуровневый анализ, валидация пакетов и стресс-тестирование соединений для современных распределенных приложений.</p>
+            </div>
+        </section>
+
+        <!-- Преимущества -->
+        <section class="features">
+            <div class="container">
+                <div class="features-grid">
+                    
+                    <!-- Карточка 1 -->
+                    <div class="feature-card">
+                        <div class="icon-box">
+                            <!-- SVG: Молния -->
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                        </div>
+                        <h3>Performance</h3>
+                        <p>Асинхронное ядро на базе нативного кода обеспечивает минимальный overhead при разборе комплексных структур данных.</p>
+                    </div>
+
+                    <!-- Карточка 2 -->
+                    <div class="feature-card">
+                        <div class="icon-box">
+                            <!-- SVG: Щит -->
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3>Security Inspection</h3>
+                        <p>Верификация пропускной способности, аудит заголовков, детекция некорректных конфигураций SSL и TLS-сессий.</p>
+                    </div>
+
+                    <!-- Карточка 3 -->
+                    <div class="feature-card">
+                        <div class="icon-box">
+                            <!-- SVG: Терминал -->
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none">
+                                <polyline points="4 17 10 11 4 5"/>
+                                <line x1="12" y1="19" x2="20" y2="19"/>
+                            </svg>
+                        </div>
+                        <h3>Strict Logging</h3>
+                        <p>Детализированный вывод в реальном времени с поддержкой кастомных фильтров структурирования пакетов.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ С КНОПКОЙ СКАЧИВАНИЯ (БЕЗ ИКОНКИ) -->
+        <section class="cta-section">
+            <div class="container">
+                <h2>Готовы к работе?</h2>
+                <p>Скачайте последнюю версию Huuif и начните анализ сетевых протоколов уже сегодня.</p>
+                <!-- Кнопка скачивания только с текстом -->
+                <a href="https://drive.google.com/drive/folders/1oGONMe63ZHh2bXFD6EH3D_cVegQ29OzI?usp=sharing" 
+                   class="download-btn" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                    Скачать Huuif
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Huuif Systems. Спецификация сетевого анализа.</p>
+        </div>
+    </footer>
 
 </body>
 </html>
